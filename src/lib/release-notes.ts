@@ -1,0 +1,78 @@
+// Sürüm notları (en yeni üstte). Yeni sürüm çıkarken EN ÜSTE eklenir; eklenmezse derleme durur (scripts/write-build-info.mjs).
+export type Release = { version: string; title: string; items: string[] };
+
+export const RELEASES: Release[] = [
+  { version: "1.2.6", title: "Güvenli kurulum ve güncelleme", items: [
+    "Güncellemede ve temiz kurulumda, eski verileriniz silinmeden önce Belgeler\\Anatek Yedekleri klasörüne güvenlik kopyası alınır. Kopya alınamazsa temiz kurulumda hiçbir şey silinmez.",
+    "Eski sürümlerin veri klasöründen aktarım artık uygulamanın ilk açılışında yapılır: her dosya boyut ve SHA-256 ile doğrulanır, eski klasör silinmez, hata veya kesinti olursa eski veri olduğu gibi kalır.",
+    "Windows’ta uygulama içinden güncelleme: Ayarlar > Hakkında > “Güncelle ve kur”. Yüklü ve yayındaki sürüm, yayın tarihi ve yeni sürümün notları gösterilir; kurulum dosyası indirilir, ilerleme görünür, iptal edilebilir.",
+    "İndirilen dosya SHA-256 ile doğrulanır; bozuk veya doğrulanamayan dosya silinir ve çalıştırılmaz. İnternet kesilirse, disk yetmezse veya iptal edilirse mevcut uygulama ve veriler değişmez.",
+    "Yeni sürüm olduğunda Genel bakışta uyarı çıkar (arka planda günde en fazla iki kez kontrol edilir).",
+    "Her yayında sürüm notları ve SHA256SUMS.txt doğrulama dosyası yayına eklenir.",
+  ] },
+  { version: "1.2.5", title: "Telefonda rahat kullanım", items: [
+    "Telefonda menü alta taşındı (Genel bakış, Servis, Müşteri, Araç, Daha fazla); üstte kısa marka çubuğu var, içerik ilk ekranda görünür.",
+    "Klavye açılınca alt menü gizlenir, yazdığınız alan görünür kalır.",
+    "Formlarda çift tıklayınca aynı kaydın ikinci kez oluşması engellendi (müşteri, araç, servis, bakım hatırlatıcı).",
+    "Telefon numarası yazarken kendiliğinden biçimlenir: 0532 111 22 33 (+90 ile başlasa da).",
+    "Menüde “Kısayollar” penceresi: Ctrl+F, Ctrl+N, Ctrl+S, Esc.",
+    "Sürüm yazısına tıklayınca ve Ayarlar > Hakkında’dan sürüm notları açılır.",
+  ] },
+  { version: "1.2.4", title: "Veri sağlığı ve kayıt güvenliği", items: [
+    "Ayarlar > Veri Sağlığı: ilişki hataları, yinelenen kayıtlar, finansal tutarsızlıklar, eksik/geçersiz alanlar, son kontrol tarihi; sorunlu kayda “Git” bağlantısı. Hiçbir kaydı kendiliğinden değiştirmez.",
+    "Kaydederken doğrulama: müşterisiz araç, araçsız/müşterisiz servis, servissiz kalem veya ödeme kaydedilemez.",
+    "Aynı plaka iki aktif araca verilemez; aynı servis numarası ikinci kez kullanılamaz; aynı ödeme 30 saniye içinde tekrar girilemez.",
+    "Fazla ödeme, negatif tutar, para birimi uyuşmazlığı ve iptal edilmiş serviste tahsilat kontrolleri; iade edilen ödeme doğru hesaba katılır.",
+    "Aynı telefon veya aynı ad-soyad uyarı olarak bildirilir; kayıtlar otomatik birleştirilmez.",
+    "Kopuk kayıt, eksik alan veya tekrarlı kimlik içeren yedek geri yüklenmez.",
+    "Genel bakışta veri sağlığı uyarısı.",
+  ] },
+  { version: "1.2.3", title: "Kurulumda mevcut Anatek sorgusu", items: [
+    "Kurulum dosyası bilgisayarda eski Anatek bulursa sorar: Evet (verilerim saklansın), Hayır (temiz kurulum), İptal.",
+    "Temiz kurulumda ikinci uyarı gelir: yedeklenmediyse veriler kalıcı olarak kaybolur.",
+    "Eski sürümlerin farklı klasör adlarındaki verileri yeni klasöre taşınır. Kaldırma ve güncelleme verilere dokunmaz.",
+  ] },
+  { version: "1.2.2", title: "Menü düzeni ve SMS belgesine uyum", items: [
+    "Menü başlığı yenilendi: logo üstte, “Anatek” altında, firma adı küçük ve ortalı; uzun adlar iki satıra sığar.",
+    "Ayarlar > Hakkında’da geliştirici imzası.",
+    "Kurulum masaüstüne ve Başlat menüsüne kısayol koyar, bitince uygulamayı açar.",
+    "SMS: çok parçalı mesajda parça başına 153 / 148 / 63 karakter, bir SMS en fazla 7 parça; aşan mesaj gönderilmeden reddedilir.",
+    "“Tekrar eden sipariş” hatasında çift SMS uyarısı; bakiye yetersiz, hatalı numara, başlık hatası ve sunucu kesintisi Türkçe açıklanır.",
+  ] },
+  { version: "1.2.1", title: "Sürüm görünürlüğü ve otomatik derleme", items: [
+    "Menüde ve Ayarlar > Hakkında’da sürüm ve derleme numarası.",
+    "“Güncelleme var mı?” düğmesi.",
+    "Her yüklemede indirme dosyaları kendiliğinden yeniden derlenir; indirme sayfasında son sürümün adı ve tarihi görünür.",
+  ] },
+  { version: "1.2", title: "Bakım hatırlatıcı ve SMS altyapı kontrolü", items: [
+    "Periyodik bakım hatırlatıcı: bakım türü (yağ, filtre, fren, lastik, muayene, sigorta, özel), son yapılma tarihi, aralık (ay/yıl), kaç gün önce gösterileceği.",
+    "Araç sayfasından ve servis tamamlanırken eklenir; Genel bakışta “Yaklaşan bakımlar” (plaka, müşteri, telefon, tarih); “Bakım yapıldı” ile bir sonraki tarih hesaplanır.",
+    "Pencere başlığında “Anatek - Firma adı”.",
+    "SMS: “Bağlantıyı test et” (bakiye ve onaylı başlıklar, kontör harcamaz), her seferinde farklı “TEST” mesajı, onaylı başlık varken APITEST uyarısı.",
+    "SMS: mesaj uzunluğu sayacı (İngilizce 155, Türkçe 150, özel karakter 65), İleti Merkezi hata kodlarının Türkçe açıklamaları, adım adım test sırası.",
+  ] },
+  { version: "1.1", title: "Düzeltmeler ve kolaylıklar", items: [
+    "İptal edilen servis ciroya, bekleyen borca, borç listesine ve sayaçlara girmez; iptal servise ödeme girilemez; önceden tahsilat varsa uyarı ve iade hatırlatması çıkar.",
+    "Çalışan ve servis durumu için “Sil”: kullanılmamışsa silinir, kullanılmışsa arşivlenir; temel durumlar silinemez; servislerde kullanılmış çalışanın adı değiştirilemez.",
+    "Yeni logo ve uygulama simgesi; menüde logo ve “Anatek - Firma adı”.",
+    "Araç formunda “+ Yeni müşteri”.",
+    "“Çıkış” düğmesi (Windows ve Android).",
+    "Yedekleme: sayfanın her yerine sürükle-bırak, büyük bırakma alanı, “X gündür yedek alınmadı” uyarısı, kayıt alanı doluluk göstergesi, SMS anahtarlarının yedeğe girmediği notu.",
+    "Pencereye yanlışlıkla dosya bırakılınca uygulamanın kaybolması önlendi.",
+    "Windows için tek kurulum dosyası.",
+  ] },
+  { version: "1.0", title: "İlk tam sürüm", items: [
+    "Müşteri, araç ve servis (iş emri) kayıtları; her servise benzersiz iş emri numarası.",
+    "Plaka ile hızlı arama (boşluk ve harf farkı önemsiz); araç ve müşteri geçmişi.",
+    "Servis durumları (Yeni, Bekliyor, Devam ediyor, Tamamlandı, Teslim edildi, İptal), kendi durumunu ekleme, kanban ve liste görünümü.",
+    "Servis kalemleri (işçilik, parça), çalışan seçimi, tahmini teslim tarihi.",
+    "Ödeme takibi: kısmi ödeme, kalan borç otomatik hesabı, ödeme yöntemleri, borç listesi, ödemeyi iptal/iade işaretleme, fazla ödeme engeli. Servis durumu ile ödeme durumu birbirinden bağımsızdır.",
+    "Gelir-gider, ciro ve tahsilat ayrı hesaplanır, net sonuç; TL, USD ve EUR ayrı tutulur, hiçbir yerde birleştirilmez.",
+    "Genel bakış paneli (tarih filtreleriyle) ve raporlar (servis, finans, araç/müşteri; filtreli).",
+    "SMS: şablonlar, servis tamamlanınca önizleme ve gönderim (ödemeden bağımsız), SMS geçmişi, başarısızları yeniden gönderme; İleti Merkezi ile gerçek gönderim (anahtar, başlık, test SMS).",
+    "Yedekleme: tek dosya, isteğe bağlı parola, bütünlük kontrolü, güvenli geri yükleme, son geri yüklemeyi geri alma.",
+    "Kalıcı silme: iki aşamalı onay, silinecek kayıt sayısı, “son silmeyi geri al”; arşivleme.",
+    "Açık ve koyu tema, klavye kısayolları, internetsiz çalışma, değişiklik kayıtları.",
+    "Android uygulaması (telefon/tablet), Windows programı ve indirme sayfası.",
+  ] },
+];

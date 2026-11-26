@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anatek — İndir</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#4b5563;--accent:#1d4ed8;--line:#d1d5db;--warn:#fef3c7}
+@media (prefers-color-scheme:dark){:root{--bg:#1e1f22;--card:#2a2c30;--text:#f3f4f6;--muted:#b6bcc6;--accent:#3b82f6;--line:#3f4248;--warn:#3a3320}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;padding:16px}
+main{max-width:640px;margin:0 auto}
+h1{font-size:1.7rem;margin:12px 0 4px}.sub{color:var(--muted);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:16px}
+.card h2{margin:0 0 12px;font-size:1.3rem}
+.btn{display:block;text-align:center;background:var(--accent);color:#fff;text-decoration:none;font-size:1.25rem;font-weight:600;padding:18px;border-radius:8px;margin:8px 0 16px}
+ol{padding-left:1.3rem;margin:0}li{margin-bottom:8px}
+.note{background:var(--warn);border-radius:8px;padding:12px 14px;margin-top:12px}
+.small{color:var(--muted);font-size:.9rem}
+.hidden{display:none}
+.logo{background:#fff;border-radius:14px;padding:10px;text-align:center;margin-bottom:12px}.logo img{max-width:100%;height:auto}
+.hide-visual{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<main>
+<div class="logo"><img src="logo.png" alt="Anatek" width="240"></div>
+<h1 class="hide-visual">Anatek</h1>
+<p class="sub">Cihazınıza uygun olanı indirin.</p>
+
+<section class="card" id="android">
+  <h2>📱 Android telefon / tablet</h2>
+  <a class="btn" id="dl-apk" href="#">Android için İndir</a>
+  <ol>
+    <li>Yukarıdaki düğmeye dokunun, dosya inecek.</li>
+    <li>İndirme bitince <b>Anatek.apk</b> dosyasına dokunun (bildirimden veya “İndirilenler”den).</li>
+    <li>“Bu kaynaktan yüklemeye izin ver” diye sorarsa <b>Ayarlar</b>’a dokunun, izni açın ve geri dönün.</li>
+    <li><b>Yükle</b>’ye dokunun. “Play Protect” uyarı verirse <b>Yine de yükle</b>’ye dokunun.</li>
+    <li>Bitince <b>Aç</b>’a dokunun. Ana ekranda ananas simgesi olacak.</li>
+  </ol>
+</section>
+
+<section class="card" id="windows">
+  <h2>💻 Windows bilgisayar</h2>
+  <a class="btn" id="dl-exe" href="#">Windows için İndir</a>
+  <ol>
+    <li>Düğmeye tıklayın, dosya inecek.</li>
+    <li>İndirilenler klasöründeki <b>Anatek-Kurulum.exe</b> dosyasına çift tıklayın.</li>
+    <li>“Windows bilgisayarınızı korudu” çıkarsa <b>Ek bilgi</b>’ye, sonra <b>Yine de çalıştır</b>’a tıklayın.</li>
+    <li>Bilgisayarda <b>eski Anatek</b> varsa kurulum size sorar: <b>Evet</b> = verilerim saklansın (önerilir), <b>Hayır</b> = temiz kurulum (veriler silinir, onay ister), <b>İptal</b> = vazgeç.</li>
+    <li>Kurulum kendiliğinden biter. Masaüstünde <b>Anatek</b> simgesi belirir, onu açın.</li>
+  </ol>
+</section>
+
+<section class="card">
+  <h2>⚠️ Önemli</h2>
+  <ul>
+    <li>Kayıtlar <b>sadece o cihazın içinde</b> saklanır. Telefon ve bilgisayar birbirine otomatik bağlanmaz.</li>
+    <li>Uygulamayı <b>silmeyin</b>. Güncelleme için yeni dosyayı eskisinin üstüne kurun.</li>
+    <li>Ayarlar bölümünden <b>düzenli yedek</b> alıp dosyayı Drive’a veya USB’ye kopyalayın.</li>
+  </ul>
+  <p class="small" id="info"></p>
+</section>
+</main>
+<script>
+(function(){
+  var host=location.hostname, owner=host.split(".")[0], repo=location.pathname.split("/")[1]||"";
+  var base="https://github.com/"+owner+"/"+repo+"/releases/latest/download/";
+  document.getElementById("dl-apk").href=base+"Anatek.apk";
+  document.getElementById("dl-exe").href=base+"Anatek-Kurulum.exe";
+  var ua=navigator.userAgent, a=document.getElementById("android"), w=document.getElementById("windows");
+  if(/Android/i.test(ua)) w.classList.add("hidden");
+  else if(/Windows/i.test(ua)) { a.classList.add("hidden"); }
+  else if(/iPhone|iPad|Mac/i.test(ua)) { document.querySelector(".sub").textContent="iPhone ve Mac için sürüm yoktur. Android veya Windows cihaz kullanın."; }
+  fetch("https://api.github.com/repos/"+owner+"/"+repo+"/releases/latest").then(function(r){return r.json()}).then(function(j){
+    if(j&&j.published_at) document.getElementById("info").textContent="Son güncelleme: "+new Date(j.published_at).toLocaleDateString("tr-TR")+(j.name?" · "+j.name:"");
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+name: Yayinla
+
+on:
+  push:   # dal adı ne olursa olsun (main/master) her yüklemede derlenir
+  workflow_dispatch:
+
+concurrency:
+  group: yayinla
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - run: npm install --legacy-peer-deps
+      - run: npx vitest run
+      - run: npm run build:mobile
+      - run: npx cap sync android
+      - name: Android SDK hazirla
+        run: |
+          SDKM="$(command -v sdkmanager || ls $ANDROID_HOME/cmdline-tools/*/bin/sdkmanager | head -1)"
+          yes | "$SDKM" --licenses > /dev/null || true
+          "$SDKM" "platforms;android-36" "build-tools;36.0.0" || true
+      - name: APK olustur
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install --legacy-peer-deps
+      - run: npx vitest run
+      - run: npm run build:mobile
+      - run: npx electron-builder --win nsis --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: release/Anatek-Kurulum.exe
+
+  yayin:
+    needs: [android, windows]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: dosyalar }
+      - name: Surum olustur (sabit indirme adresi)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mv dosyalar/android/app-debug.apk dosyalar/Anatek.apk
+          cp dosyalar/windows/Anatek-Kurulum.exe dosyalar/Anatek-Kurulum.exe
+          (cd dosyalar && sha256sum Anatek.apk Anatek-Kurulum.exe > SHA256SUMS.txt)
+          node scripts/release-body.mjs > release-body.md
+          gh release delete son-surum --yes --cleanup-tag || true
+          gh release create son-surum dosyalar/Anatek.apk dosyalar/windows/Anatek-Kurulum.exe dosyalar/SHA256SUMS.txt \
+            --title "Anatek - Son Surum (derleme ${{ github.run_number }})" --notes-file release-body.md --latest
+
+  # Sayfa iki işe bölünür: dosyayı YÜKLEYEN iş bitince GitHub onu görünür kılar, sonra ayrı iş YAYINLAR.
+  # (Aynı işte yükleyip yayınlamak "github-pages dosyası bulunamadı" hatasına yol açabiliyordu.)
+  sayfa-hazirla:
+    needs: yayin
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: site }
+
+  sayfa:
+    needs: sayfa-hazirla
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

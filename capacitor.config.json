@@ -1,0 +1,6 @@
+{
+  "appId": "com.ustaservis.takip",
+  "appName": "Anatek",
+  "webDir": ".output/public",
+  "android": { "allowMixedContent": false }
+}
